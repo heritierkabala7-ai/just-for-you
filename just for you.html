@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#fff8f1">
+	<meta name="description" content="Un petit cœur et quelques mots sincères, rien que pour toi.">
+	<title>Un petit mot pour Mima</title>
+	<style>
+		:root {
+			color-scheme: light;
+			--paper: #fff8f1;
+			--ink: #342522;
+			--muted: #796b65;
+			--berry: #b3314d;
+			--berry-dark: #84223e;
+			--coral: #f17d69;
+			--rose: #f5ddd5;
+			--leaf: #526c58;
+			--line: #e9d9ce;
+			--serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+			--sans: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+		}
+
+		*, *::before, *::after { box-sizing: border-box; }
+		html { scroll-behavior: smooth; }
+		body {
+			min-width: 320px;
+			margin: 0;
+			background: var(--paper);
+			color: var(--ink);
+			font-family: var(--sans);
+			font-size: 16px;
+			line-height: 1.65;
+		}
+		button, input { font: inherit; }
+		button { cursor: pointer; }
+		button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #d77d72; outline-offset: 4px; }
+		.page-shell { max-width: 1440px; margin: 0 auto; overflow: hidden; }
+
+		.topbar {
+			position: relative;
+			z-index: 2;
+			display: flex;
+			min-height: 76px;
+			align-items: center;
+			justify-content: space-between;
+			padding: 0 clamp(20px, 6vw, 84px);
+			border-bottom: 1px solid rgb(130 78 69 / 12%);
+		}
+		.brand { color: var(--berry-dark); font-family: var(--serif); font-size: 18px; font-style: italic; }
+		.top-actions { display: flex; align-items: center; gap: 10px; }
+		.sound-toggle, .personalize {
+			display: inline-flex;
+			min-height: 42px;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			padding: 0 13px;
+			border: 1px solid var(--line);
+			background: transparent;
+			color: var(--ink);
+			font-size: 12px;
+			font-weight: 700;
+		}
+		.sound-toggle:hover, .personalize:hover { border-color: var(--berry); color: var(--berry); }
+		.sound-toggle[aria-pressed="true"] { border-color: var(--berry); background: #f6e4df; color: var(--berry-dark); }
+		.icon { font-size: 16px; line-height: 1; }
+
+		.hero {
+			position: relative;
+			display: grid;
+			min-height: min(760px, calc(100svh - 76px));
+			grid-template-columns: 1fr 1fr;
+			align-items: center;
+			padding: 50px clamp(24px, 8vw, 120px) 64px;
+			background:
+				radial-gradient(ellipse at 75% 47%, rgb(248 224 214 / 78%), transparent 36%),
+				radial-gradient(ellipse at 5% 100%, rgb(228 235 215 / 72%), transparent 34%),
+				var(--paper);
+		}
+		.hero-copy { z-index: 1; max-width: 570px; padding: 30px 0; animation: rise-in .85s .1s both; }
+		.eyebrow {
+			display: flex;
+			align-items: center;
+			gap: 11px;
+			margin: 0 0 23px;
+			color: var(--leaf);
+			font-size: 11px;
+			font-weight: 800;
+			text-transform: uppercase;
+		}
+		.eyebrow::before { width: 26px; height: 1px; background: currentColor; content: ""; }
+		h1, h2, p { margin-top: 0; }
+		h1 {
+			max-width: 620px;
+			margin-bottom: 20px;
+			font-family: var(--serif);
+			font-size: clamp(49px, 6vw, 80px);
+			font-weight: 500;
+			line-height: 1.04;
+		}
+		h1 em { color: var(--berry); font-weight: 500; }
+		.intro { max-width: 430px; margin-bottom: 28px; color: var(--muted); font-size: 16px; }
+		.start-button {
+			display: inline-flex;
+			min-height: 52px;
+			align-items: center;
+			gap: 17px;
+			padding: 0 20px;
+			border: 1px solid var(--berry);
+			background: var(--berry);
+			color: #fffaf4;
+			font-size: 13px;
+			font-weight: 700;
+			transition: transform .2s ease, background .2s ease;
+		}
+		.start-button:hover { transform: translateY(-2px); background: var(--berry-dark); }
+		.start-button span { font-size: 18px; }
+		.hero-caption { margin: 21px 0 0; color: #887a72; font-size: 12px; }
+
+		.heart-stage {
+			position: relative;
+			display: grid;
+			width: min(100%, 530px);
+			aspect-ratio: 1;
+			justify-self: center;
+			place-items: center;
+			isolation: isolate;
+			animation: float-in 1s .2s both;
+		}
+		.heart-stage::before, .heart-stage::after {
+			position: absolute;
+			z-index: -1;
+			width: 72%;
+			aspect-ratio: 1;
+			border: 1px solid rgb(179 49 77 / 15%);
+			border-radius: 50%;
+			content: "";
+			animation: ring-pulse 4s ease-in-out infinite;
+		}
+		.heart-stage::after { width: 92%; animation-delay: 1.2s; }
+		#heart-canvas { width: 100%; height: 100%; overflow: visible; }
+		.heart-label {
+			position: absolute;
+			bottom: 13%;
+			left: 50%;
+			width: max-content;
+			max-width: 90%;
+			transform: translateX(-50%);
+			color: var(--berry-dark);
+			font-family: var(--serif);
+			font-size: clamp(14px, 2vw, 18px);
+			font-style: italic;
+			text-align: center;
+		}
+		.floating-note {
+			position: absolute;
+			top: 17%;
+			right: 4%;
+			padding: 8px 12px;
+			border: 1px solid rgb(179 49 77 / 12%);
+			background: rgb(255 248 241 / 86%);
+			color: var(--berry-dark);
+			font-family: var(--serif);
+			font-size: 13px;
+			font-style: italic;
+			transform: rotate(5deg);
+		}
+
+		.note-section { padding: 92px 24px 100px; background: #fffdf9; }
+		.note-inner { width: min(100%, 710px); margin: 0 auto; }
+		.section-label { margin-bottom: 18px; color: var(--leaf); font-size: 11px; font-weight: 800; text-transform: uppercase; }
+		.note-inner h2 {
+			margin-bottom: 26px;
+			font-family: var(--serif);
+			font-size: clamp(36px, 5.4vw, 58px);
+			font-weight: 500;
+			line-height: 1.12;
+		}
+		.note-inner p { color: #62534d; font-size: 17px; }
+		.note-inner .dear { margin-bottom: 18px; color: var(--berry-dark); font-family: var(--serif); font-size: 24px; }
+		.quote {
+			margin: 34px 0;
+			padding: 6px 0 6px 22px;
+			border-left: 2px solid var(--coral);
+			color: var(--berry-dark) !important;
+			font-family: var(--serif);
+			font-size: clamp(23px, 3.6vw, 31px) !important;
+			font-style: italic;
+			line-height: 1.4;
+		}
+		.signoff { margin-top: 30px; color: var(--berry-dark) !important; font-family: var(--serif); font-size: 21px !important; font-style: italic; }
+		footer { display: flex; min-height: 88px; align-items: center; justify-content: space-between; gap: 16px; padding: 20px clamp(22px, 7vw, 96px); background: #352522; color: #f8e9df; font-size: 12px; }
+		footer p { margin: 0; }
+		footer .footer-name { color: #ffbdac; font-family: var(--serif); font-size: 16px; font-style: italic; }
+
+		dialog { width: min(440px, calc(100% - 28px)); padding: 0; border: 0; background: var(--paper); color: var(--ink); box-shadow: 0 24px 80px rgb(52 37 34 / 28%); }
+		dialog::backdrop { background: rgb(49 31 34 / 62%); }
+		.dialog-form { padding: 28px; }
+		.dialog-form h2 { margin-bottom: 8px; font-family: var(--serif); font-size: 30px; font-weight: 500; }
+		.dialog-form > p { margin-bottom: 20px; color: var(--muted); font-size: 13px; }
+		.field { display: grid; gap: 6px; margin: 14px 0; }
+		.field label { font-size: 12px; font-weight: 700; }
+		.field input { width: 100%; min-height: 44px; padding: 9px 11px; border: 1px solid var(--line); background: white; color: var(--ink); }
+		.dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 22px; }
+		.dialog-actions button { min-height: 42px; padding: 0 13px; border: 1px solid var(--berry); font-size: 12px; font-weight: 700; }
+		.cancel-button { background: transparent; color: var(--berry-dark); }
+		.download-button { background: var(--berry); color: white; }
+		.download-button:hover { background: var(--berry-dark); }
+		.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+
+		@keyframes heartbeat { 0%, 34%, 100% { transform: scale(1); } 13%, 25% { transform: scale(1.055); } }
+		@keyframes twinkle { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+		@keyframes rise-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+		@keyframes float-in { from { opacity: 0; transform: translateY(12px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+		@keyframes ring-pulse { 0%, 100% { transform: scale(.96); opacity: .5; } 50% { transform: scale(1.04); opacity: 1; } }
+
+		@media (max-width: 760px) {
+			.topbar { min-height: 64px; padding: 0 16px; }
+			.brand { font-size: 16px; }
+			.personalize { min-height: 38px; padding: 0 9px; font-size: 11px; }
+			.sound-toggle { min-height: 38px; width: 40px; padding: 0; }
+			.sound-label { display: none; }
+			.hero { min-height: auto; grid-template-columns: 1fr; padding: 46px 24px 40px; }
+			.hero-copy { grid-row: 1; padding: 0; }
+			.hero-copy h1 { max-width: 560px; font-size: clamp(48px, 12vw, 70px); }
+			.intro { max-width: 460px; }
+			.heart-stage { width: min(100%, 410px); grid-row: 2; margin: 14px auto 0; }
+			.floating-note { top: 14%; right: 1%; font-size: 12px; }
+			.heart-label { bottom: 10%; }
+			.note-section { padding: 72px 24px 66px; }
+			.note-inner p { font-size: 16px; }
+			footer { align-items: flex-start; flex-direction: column; }
+		}
+		@media (prefers-reduced-motion: reduce) {
+			*, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+		}
+	</style>
+</head>
+<body>
+	<div class="page-shell">
+		<header class="topbar">
+			<div class="brand">Une pensée pour <span data-name="her">Mima</span></div>
+			<div class="top-actions">
+				<button class="sound-toggle" id="sound-toggle" type="button" aria-label="Activer le son du battement de coeur" aria-pressed="false" title="Activer ou couper le son">
+					<span class="icon" id="sound-icon" aria-hidden="true">♫</span><span class="sound-label" id="sound-label">Activer le son</span>
+				</button>
+				<button class="personalize" id="personalize-open" type="button" aria-haspopup="dialog"><span class="icon" aria-hidden="true">✎</span> Personnaliser</button>
+			</div>
+		</header>
+
+		<main>
+			<section class="hero" aria-labelledby="main-title">
+				<div class="hero-copy">
+					<p class="eyebrow"><em>Just for you</em></p>
+					<h1><span data-name="her">Mima</span>, tu rends mes journées <em>plus belles.</em></h1>
+					<p class="intro">J’avais envie de t’offrir une petite attention, faite spécialement pour toi. Rien d’extraordinaire, juste quelques mots sincères pour te dire que tu comptes beaucoup pour moi.</p>
+					<button class="start-button" id="reveal-button" type="button">Découvrir mon message <span aria-hidden="true">↓</span></button>
+					<p class="hero-caption">À lire quand tu en as envie, à ton rythme.</p>
+				</div>
+				<div class="heart-stage" aria-label="Un coeur animé qui bat doucement">
+					<canvas id="heart-canvas" role="img" aria-label="Un coeur rouge formé de petites lumières qui pulse doucement"></canvas>
+					<span class="floating-note">juste pour toi</span>
+					<span class="heart-label">un petit bout de mon coeur</span>
+				</div>
+			</section>
+
+			<section class="note-section" id="message" aria-labelledby="message-title">
+				<div class="note-inner">
+					<p class="section-label">Quelques mots sincères</p>
+					<p class="dear">Pour <span data-name="her">Mima</span>,</p>
+					<h2 id="message-title">Je voulais te le dire simplement.</h2>
+					<p>J’aime passer du temps avec toi, apprendre à te connaître et découvrir tout ce qui fait que tu es toi. Nos échanges me font du bien, et je me surprends souvent à penser à toi avec le sourire.</p>
+					<p>Tu me plais pour ta façon d’être, pour les moments qu’on partage et pour le sourire que tu arrives à mettre dans mes journées. J’aime apprendre à te connaître, petit à petit.</p>
+					<p class="quote">Ta présence rend mes journées plus belles, et je voulais que tu le saches.</p>
+					<p>Je ne cherche pas les mots parfaits : je voulais simplement te faire cette petite surprise et te rappeler que tu as une place spéciale dans mes pensées.</p>
+					<p class="signoff">Avec tendresse,<br><span data-name="mine">quelqu’un qui pense à toi</span></p>
+				</div>
+			</section>
+		</main>
+
+		<footer>
+			<p>Fait avec sincérité, juste pour toi.</p>
+			<p class="footer-name"><span data-name="her">Mima</span> <span aria-hidden="true">♥</span></p>
+		</footer>
+	</div>
+
+	<dialog id="personalize-dialog" aria-labelledby="dialog-title">
+		<form class="dialog-form" id="personalize-form">
+			<h2 id="dialog-title">À qui est ce petit mot ?</h2>
+			<p>Ajoute vos prénoms et télécharge une page personnalisée que tu pourras lui envoyer.</p>
+			<div class="field">
+				<label for="her-name">Son prénom</label>
+				<input id="her-name" name="herName" value="Mima" maxlength="40" autocomplete="off" required>
+			</div>
+			<div class="field">
+				<label for="my-name">Ton prénom</label>
+				<input id="my-name" name="myName" placeholder="Écris ton prénom" maxlength="40" autocomplete="given-name" required>
+			</div>
+			<div class="dialog-actions">
+				<button class="cancel-button" id="personalize-cancel" type="button">Annuler</button>
+				<button class="download-button" type="submit">Télécharger ma page</button>
+			</div>
+		</form>
+	</dialog>
+
+	<script>
+		const canvas = document.querySelector("#heart-canvas");
+		const context = canvas.getContext("2d");
+		const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+		const heartPoints = [];
+		const sparklePoints = [];
+		let animationFrame = 0;
+		let pulseStartedAt = performance.now();
+		let audioContext = null;
+		let soundEnabled = false;
+		let lastBeat = 0;
+
+		function heartCurve(angle) {
+			return {
+				x: 16 * Math.pow(Math.sin(angle), 3),
+				y: -(13 * Math.cos(angle) - 5 * Math.cos(2 * angle) - 2 * Math.cos(3 * angle) - Math.cos(4 * angle))
+			};
+		}
+
+		for (let index = 0; index < 720; index += 1) {
+			const angle = (index / 720) * Math.PI * 2;
+			const edge = heartCurve(angle);
+			const inset = .12 + ((index * 17) % 100) / 135;
+			const mix = 1 - inset;
+			heartPoints.push({
+				x: edge.x * mix + Math.sin(index * 12.9898) * .33,
+				y: edge.y * mix + Math.cos(index * 7.233) * .33,
+				radius: .65 + ((index * 29) % 100) / 105,
+				tint: (index * 31) % 100
+			});
+		}
+		for (let index = 0; index < 34; index += 1) {
+			sparklePoints.push({ x: Math.sin(index * 43.7) * 21, y: Math.cos(index * 17.3) * 19, phase: index * .71, radius: 1 + (index % 3) * .55 });
+		}
+
+		function drawHeart(now) {
+			const bounds = canvas.getBoundingClientRect();
+			const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+			const width = Math.max(1, bounds.width);
+			const height = Math.max(1, bounds.height);
+			if (canvas.width !== Math.round(width * pixelRatio) || canvas.height !== Math.round(height * pixelRatio)) {
+				canvas.width = Math.round(width * pixelRatio);
+				canvas.height = Math.round(height * pixelRatio);
+			}
+			context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+			context.clearRect(0, 0, width, height);
+
+			const seconds = (now - pulseStartedAt) / 1000;
+			const phase = seconds % 1.18;
+			const beat = phase < .18 ? Math.sin(Math.PI * phase / .18) : phase > .25 && phase < .4 ? .82 * Math.sin(Math.PI * (phase - .25) / .15) : 0;
+			const scale = Math.min(width, height) / 43 * (1 + beat * .105);
+			const centerX = width / 2;
+			const centerY = height * .47;
+			const glow = context.createRadialGradient(centerX, centerY, scale * 2, centerX, centerY, scale * 22);
+			glow.addColorStop(0, `rgba(239, 35, 67, ${.16 + beat * .2})`);
+			glow.addColorStop(1, "rgba(239, 35, 67, 0)");
+			context.fillStyle = glow;
+			context.beginPath();
+			context.arc(centerX, centerY, scale * 22, 0, Math.PI * 2);
+			context.fill();
+
+			for (const point of heartPoints) {
+				const twinkle = .82 + .18 * Math.sin(seconds * 2 + point.tint);
+				const x = centerX + point.x * scale * (1 + beat * .04);
+				const y = centerY + point.y * scale * (1 + beat * .04);
+				const radius = point.radius * (1 + beat * .38);
+				context.beginPath();
+				context.fillStyle = point.tint < 25
+					? `rgba(255, 166, 139, ${twinkle})`
+					: `rgba(${220 + point.tint * .35}, ${15 + point.tint * .12}, ${43 + point.tint * .16}, ${twinkle})`;
+				context.arc(x, y, radius, 0, Math.PI * 2);
+				context.fill();
+			}
+
+			for (const sparkle of sparklePoints) {
+				const alpha = .25 + .55 * ((Math.sin(seconds * 1.5 + sparkle.phase) + 1) / 2);
+				const x = centerX + sparkle.x * scale;
+				const y = centerY + sparkle.y * scale;
+				context.beginPath();
+				context.fillStyle = `rgba(179, 49, 77, ${alpha})`;
+				context.arc(x, y, sparkle.radius, 0, Math.PI * 2);
+				context.fill();
+			}
+
+			if (soundEnabled && (phase < .045 || (phase > .2 && phase < .245)) && now - lastBeat > 230) {
+				playHeartbeat(phase < .045 ? .7 : .46);
+				lastBeat = now;
+			}
+			if (!reducedMotion.matches) animationFrame = requestAnimationFrame(drawHeart);
+		}
+
+		function playHeartbeat(volume) {
+			if (!audioContext) return;
+			const oscillator = audioContext.createOscillator();
+			const gain = audioContext.createGain();
+			oscillator.type = "sine";
+			oscillator.frequency.setValueAtTime(72, audioContext.currentTime);
+			oscillator.frequency.exponentialRampToValueAtTime(38, audioContext.currentTime + .12);
+			gain.gain.setValueAtTime(volume * .055, audioContext.currentTime);
+			gain.gain.exponentialRampToValueAtTime(.001, audioContext.currentTime + .15);
+			oscillator.connect(gain);
+			gain.connect(audioContext.destination);
+			oscillator.start();
+			oscillator.stop(audioContext.currentTime + .16);
+		}
+
+		drawHeart(performance.now());
+		reducedMotion.addEventListener("change", () => {
+			cancelAnimationFrame(animationFrame);
+			if (!reducedMotion.matches) drawHeart(performance.now());
+			else drawHeart(performance.now());
+		});
+
+		document.querySelector("#reveal-button").addEventListener("click", () => {
+			document.querySelector("#message").scrollIntoView({ behavior: reducedMotion.matches ? "auto" : "smooth" });
+		});
+
+		document.querySelector("#sound-toggle").addEventListener("click", async (event) => {
+			soundEnabled = !soundEnabled;
+			const button = event.currentTarget;
+			button.setAttribute("aria-pressed", String(soundEnabled));
+			button.setAttribute("aria-label", soundEnabled ? "Couper le son du battement de coeur" : "Activer le son du battement de coeur");
+			document.querySelector("#sound-icon").textContent = soundEnabled ? "♫" : "♪";
+			document.querySelector("#sound-label").textContent = soundEnabled ? "Couper le son" : "Activer le son";
+			if (soundEnabled) {
+				const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+				if (AudioContextClass) {
+					audioContext ??= new AudioContextClass();
+					if (audioContext.state === "suspended") await audioContext.resume();
+					playHeartbeat(.65);
+				} else {
+					document.querySelector("#sound-label").textContent = "Audio indisponible";
+				}
+			}
+		});
+
+		const dialog = document.querySelector("#personalize-dialog");
+		const herInput = document.querySelector("#her-name");
+		const myInput = document.querySelector("#my-name");
+		document.querySelector("#personalize-open").addEventListener("click", () => {
+			dialog.showModal();
+			herInput.focus();
+		});
+		document.querySelector("#personalize-cancel").addEventListener("click", () => dialog.close());
+
+		document.querySelector("#personalize-form").addEventListener("submit", (event) => {
+			event.preventDefault();
+			const herName = herInput.value.trim();
+			const myName = myInput.value.trim();
+			if (!herName || !myName) return;
+
+			document.querySelectorAll('[data-name="her"]').forEach((node) => { node.textContent = herName; });
+			document.querySelectorAll('[data-name="mine"]').forEach((node) => { node.textContent = myName; });
+			herInput.setAttribute("value", herName);
+			myInput.setAttribute("value", myName);
+			document.title = `Un petit mot pour ${herName}`;
+			dialog.close();
+
+			const fileName = herName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "").toLowerCase() || "quelquun";
+			const downloadUrl = URL.createObjectURL(new Blob([`<!doctype html>\n${document.documentElement.outerHTML}`], { type: "text/html;charset=utf-8" }));
+			const downloadLink = document.createElement("a");
+			downloadLink.href = downloadUrl;
+			downloadLink.download = `petit-mot-pour-${fileName}.html`;
+			downloadLink.click();
+			setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+		});
+
+	</script>
+</body>
+</html>
